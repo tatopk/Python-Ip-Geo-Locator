@@ -1,7 +1,9 @@
 from tkinter import *
 import pygeoip
 import webbrowser
+import logging
 
+logging.basicConfig(filename='locator.log', level=logging.INFO)
 gip = pygeoip.GeoIP("GeoLiteCity.dat")
 
 root = Tk()
@@ -10,8 +12,10 @@ root.title("Ip Locatior")
 
 
 def onClick():
-
-    res = gip.record_by_addr(ip_address_e.get())
+    try:
+        res = gip.record_by_addr(ip_address_e.get())
+    except Exception as e:
+        logging.error('Exception occurred ' + str(e))
 
     dma_code_e.delete(0, "end")
     area_code_e.delete(0, "end")
@@ -27,30 +31,53 @@ def onClick():
     time_zone_e.delete(0, "end")
 
     if res["dma_code"] == 0:
-        dma_code_e.insert(0, "None")
+        dma_code_e.insert(0, "Not Found")
     else:
         dma_code_e.insert(0, res["dma_code"])
     if res["area_code"] == 0:
-        area_code_e.insert(0, "None")
+        area_code_e.insert(0, "Not Found")
     else:
         area_code_e.insert(0, res["area_code"])
     if res["metro_code"] is None:
-        metro_code_e.insert(0, "None")
+        metro_code_e.insert(0, "Not Found")
     else:
         metro_code_e.insert(0, res["metro_code"])
-
-    if res["metro_code"] is None:
-        postal_code_e.insert(0, "None")
+    if res["postal_code"] is None:
+        postal_code_e.insert(0, "Not Found")
     else:
         postal_code_e.insert(0, res["postal_code"])
-    country_code_e.insert(0, res["country_code"])
-    country_e.insert(0, res["country_name"])
-    continent_e.insert(0, res["continent"])
-    region_code_e.insert(0, res["region_code"])
-    city_e.insert(0, res["city"])
-    latitude_e.insert(0, res["latitude"])
-    longitude_e.insert(0, res["longitude"])
-    time_zone_e.insert(0, res["time_zone"])
+    if res["country_code"] is None:
+        country_code_e.insert(0, "Not Found")
+    else:
+        country_code_e.insert(0, res["country_code"])
+    if res["country_name"] is None:
+        country_e.insert(0, "Not Found")
+    else:
+        country_e.insert(0, res["country_name"])
+    if res["continent"] is None:
+        country_e.insert(0, "Not Found")
+    else:
+        continent_e.insert(0, res["continent"])
+    if res["region_code"] is None:
+        region_code_e.insert(0, "Not Found")
+    else:
+        region_code_e.insert(0, res["region_code"])
+    if res["city"] is None:
+        city_e.insert(0, "Not Found")
+    else:
+        city_e.insert(0, res["city"])
+    if res["latitude"] is None:
+        latitude_e.insert(0, "Not Found")
+    else:
+        latitude_e.insert(0, res["latitude"])
+    if res["longitude"] is None:
+        longitude_e.insert(0, "Not Found")
+    else:
+        longitude_e.insert(0, res["longitude"])
+    if res["time_zone"] is None:
+        time_zone_e.insert(0, "Not Found")
+    else:
+        time_zone_e.insert(0, res["time_zone"])
 
 
 def openmaps():
@@ -58,6 +85,7 @@ def openmaps():
     res = gip.record_by_addr(ip_address_e.get())
 
     webbrowser.open('https://www.google.com/maps/?q=' + str(res["latitude"]) + "," + str(res["longitude"]))
+
 
 #Buttons
 
